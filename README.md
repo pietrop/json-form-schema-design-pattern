@@ -2,7 +2,7 @@
 
 <!-- _One liner + link to confluence page_
 _Screenshot of UI - optional_ -->
-A deep dive into the Json Form Schema (Design) Pattern. See [storybook](https://pietropassarelli.net/json-form-schema-design-pattern) intro doc for more info.
+A deep dive into the Json Form Schema (Design) Pattern. See [storybook](https://pietropassarelli.net/json-form-schema-design-pattern) intro doc for more info. This is a learning resource.
 
 ## Setup
 
