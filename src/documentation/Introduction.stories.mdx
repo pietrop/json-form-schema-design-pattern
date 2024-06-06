@@ -1,0 +1,23 @@
+
+import { ArgsTable, Canvas, Meta, Story } from '@storybook/addon-docs';
+import { LinkTo } from '@storybook/addon-links';
+import {useState} from "react";
+import ReactJson from 'react-json-view';
+import Form from '../Form/index';
+import {getSchemaExamples} from "../demo/schema-examples";
+import DemoApp from "../demo/App";
+
+<Meta title="Introduction" component={Form} />
+
+export const Template = (args) => <Form {...args} />;
+
+# Json Form Schema (Design) Pattern 
+## Introduction 
+
+The **JSON Schema Form Pattern** is a design pattern for creating dynamic forms in web applications. It involves defining a JSON schema that describes the structure and validation rules for a form, and then using that schema to automatically generate the form's user interface.
+
+This project is designed to serve as a learning resource for those seeking to understand the implementation of the JSON Schema Form Design Pattern. By exploring the key components that constitute the pattern, you will gain insight into how they fit together and how they can be customized to suit specific use cases.
+
+See [Architecture page](/docs/architecture-overview--page), [Code Walk Through](/docs/architecture-codewalkthrough--page) and [Demo](/docs/demo--with-hooks) for more details.
+
+Github repo: [github.com/pietrop/json-form-schema-design-pattern](https://github.com/pietrop/json-form-schema-design-pattern)

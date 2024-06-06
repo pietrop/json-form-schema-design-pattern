@@ -1,0 +1,284 @@
+
+import { ArgsTable, Canvas, Meta, Story, Source } from '@storybook/addon-docs';
+import { linkTo } from '@storybook/addon-links';
+import ReactJson from 'react-json-view';
+import Form from '../Form/index';
+import {getSchemaExamples, getFormDataExamples} from "../demo/schema-examples";
+import FormRaw from '!raw-loader!../Form/index.jsx';
+import useFormRaw from '!raw-loader!../Form/useForm/index.jsx';
+import validationRaw from '!raw-loader!../Form/useForm/validation/index.js';
+import FormFieldsListRaw from '!raw-loader!../Form/FormFieldsList/index.jsx';
+import FormFieldFactoryRaw from '!raw-loader!../Form/FormFieldsList/FormFieldFactory/index.jsx';
+
+
+<Meta title="Architecture/Overview" component={Form} />
+
+# Json Form Schema (Design) Pattern 
+
+##  Architecture Overview
+
+
+The JSON form schema design pattern is a powerful way to generate dynamic forms in React applications. By defining the structure of the form using a JSON schema, we can create a flexible and reusable component that can handle a wide range of form inputs and validation rules. In this architecture doc, we'll explore how to implement this pattern in React, without relying on external libraries. 
+
+Key parts of the pattern are the initial form data, `schema`, the`Form` component, and a `validation` function. However to make a clear example we'll also cover other components that can be used to give a little more structure to the pattern, such as `useForm` hook, `FormFieldsList` and a `FormFieldFactory`. 
+
+By the end of this doc, you should have a good mental model for how to build dynamic forms using the JSON form schema design pattern in React, and be able to navigate the rest of this storybook as well as the code base for this repo.
+
+```
+Form
+├── FormFieldsList
+|      └── FormFieldFactory
+└── useForm
+    └── validation
+```
+
+**Diagram **
+```
++---------------+       +-----------------------+
+|     Schema    |       |   initial form data*  |
++---------------+       +-----------------------+
+            \                /
+             v              v
+            +---------------+
+            |     Form      |
+            +---------------+
+                /       \
+               /         \
+              /           \
+             /             \
+            v               v
++----------------+   +-------------+
+| FormFieldsList |   |   useForm   |
++----------------+   +-------------+
+        |                   |
+        v                   v
++----------------+   +-------------+
+|FormFieldFactory|   |  Validation |
++----------------+   +-------------+
+
+*initial form data is optional
+```
+
+**Folder structure **
+
+
+
+## Schema 
+The schema is a JSON object that describes the structure of the form, including the fields, their types, and any validation rules. This schema is used to generate the form dynamically.
+
+**Example schema:**
+
+
+<ReactJson 
+theme={window?.matchMedia('(prefers-color-scheme: dark)').matches? "monokai" :"rjv-default"}
+src={{
+  "title": "Example Form",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email",
+      "format": "email"
+    },
+    "age": {
+      "type": "integer",
+      "title": "Age",
+      "minimum": 18,
+      "maximum": 65
+    }
+  },
+  "required": ["name", "email"]
+}} />
+
+<details><summary>JSON Schema in more details</summary>
+
+
+### `$schema`
+
+The $schema property specifies the version of the JSON Schema specification being used. For example:
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer"
+    }
+  }
+}
+```
+
+### `type`
+The type property specifies the data type of the JSON value. Possible values include "string", "number", "integer", "boolean", "object", and "array". For example:
+```
+{
+  "type": "string"
+}
+```
+### `properties`
+The properties property is an object containing the names and values of the properties in the JSON object. For example:
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer"
+    }
+  }
+}
+```
+### `required`
+The required property is an array of the names of the properties that are required. For example:
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer"
+    }
+  },
+  "required": ["name"]
+}
+```
+### `minimum/maximum`
+The minimum and maximum properties specify the minimum and maximum allowable values for a number. For example:
+```json
+{
+  "type": "number",
+  "minimum": 0,
+  "maximum": 100
+}
+```
+
+### `pattern`
+The pattern property specifies a regular expression pattern that a string must match. For example:
+
+```json
+{
+  "type": "string",
+  "pattern": "^[a-zA-Z0-9_-]+$"
+}
+```
+
+### `enum`
+The enum property specifies an array of possible values for a property. For example:
+```json
+{
+  "type": "string",
+  "enum": ["red", "green", "blue"]
+}
+```
+
+</details>
+
+<details><summary>Advanced example</summary>
+
+<ReactJson src={getSchemaExamples("basic")} />
+
+</details>
+
+## Initial Form data
+
+The initial form data is also a JSON object that represents the default values of the form fields when the form is first loaded. This data is typically provided by an API or backend service.
+
+**Example initial form data:**
+
+<ReactJson 
+  theme={window?.matchMedia('(prefers-color-scheme: dark)').matches? "monokai" :"rjv-default"} 
+  src={{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "age": 30
+}} />
+
+<details><summary>Advanced example</summary>
+
+<ReactJson 
+  theme={window?.matchMedia('(prefers-color-scheme: dark)').matches? "monokai" :"rjv-default"} 
+  src={getFormDataExamples("basic")} 
+/>
+
+</details>
+
+## Components Overview 
+
+<dl>
+     <dt><strong><code>Form</code></strong></dt>
+  <dd>The form component is responsible for rendering the form fields based on the schema and initial data. It also handles user input and updates the form data accordingly.
+</dd>
+  <dt><strong>React Hook - <code>useForm</code></strong></dt>
+  <dd>The useForm hook is a custom hook that encapsulates the form state and behavior. It returns an object with the current form data, form errors, and functions to update the form data and submit the form.
+</dd>
+  <dt><strong>Validation function</strong></dt>
+  <dd>Validation is the process of ensuring that the form data entered by the user is valid according to the schema. This is typically done in the validate function, which checks each field against its validation rules and returns a list of errors, if any.</dd>
+  <dt><strong><code>FormFieldsList</code></strong></dt>
+  <dd>The <code>FormFieldsList</code> component is responsible for rendering the form fields based on the schema and initial data. It maps over the properties in the schema and generates a FormFieldFactory for each property.</dd>
+    <dt><strong><code>FormFieldFactory</code></strong></dt>
+  <dd>The <code>FormFieldFactory</code> is a factory function that generates a form field component based on the field schema. It is responsible for rendering the correct form field based on the schema type, and passing the necessary props to the form field component.</dd>
+</dl>
+
+
+### Component's diagram
+
+```
++-------------+  +-------------+                                                                               
+|             |  |             |                                                                               
+|   Schema    |  |  initial    |                                                                               
+|             |  |  form       |                                                                               
+|             |  |  data*      |                                                                               
++-------------+  +-------------+                                                                               
++-------------------------------------------------------------------------+                                    
+|                                                                         |                                    
+|                                 Form                                    |                                    
+|                                                                         |                                    
+|                                                                         |                                    
+|           +---------------------------------------------------+         |                                    
+|           |                  React Hook - useForm             |         |                                    
+|           |                                                   |         |                                    
+|           |                                                   |         |                                    
+|           |           +----------------------------+          |         |                                    
+|           |           |        Validation          |          |         |                                    
+|           |           +----------------------------+          |         |                                    
+|           |                                                   |         |                                    
+|           |                                                   |         |                                    
+|           +---------------------------------------------------+         |                                    
+|                                                                         |                                    
+|           +----------------------------------------------------+        |                                    
+|           |                  FormFieldsList                    |        |                                    
+|           |                                                    |        |                                    
+|           |                +-------------------+               |        |                                    
+|           |                |                   |               |        |                                    
+|           |                |  FormFieldFactory |               |        |                                    
+|           |                +-------------------+               |        |                                    
+|           |                                                    |        |                                    
+|           +----------------------------------------------------+        |                                    
+|                                                                         |                                    
+|                           +---------------------+                       |                                    
+|                           |      Save Btn       |                       |                                    
+|                           |                     |                       |                                    
+|                           +---------------------+                       |                                    
++-------------------------------------------------------------------------+ 
+
+*initial form data is optional
+```
+
+
+
+<details><summary> Miro diagram </summary>
+
+<iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVMcewZRQ=/?moveToViewport=-362,-276,830,644&embedId=265167850948" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+
+</details>

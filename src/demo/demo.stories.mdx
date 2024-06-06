@@ -1,0 +1,91 @@
+
+import { ArgsTable, Canvas, Description, Meta, Story, Source } from '@storybook/addon-docs';
+import {useState} from "react";
+import ReactJson from 'react-json-view';
+import Form from '../Form/index';
+import {getSchemaExamples, getFormDataExamples} from "./schema-examples";
+import DemoApp from "./App";
+
+<Meta title="Demo" component={Form} />
+
+
+
+export const Template = (args) => <Form {...args} />;
+
+# Json Form Schema (Design) Pattern - Demo
+
+```jsx
+<Form 
+    schema={schema} 
+    onSubmitCallback={(data)=>(console.log("onSubmitCallback", JSON.stringify(data)))}
+/>
+```
+
+<Story name="With hooks">
+  {() => (
+      <DemoApp/>
+    )}
+</Story>
+
+
+## Example with all the props
+
+
+<!-- https://github.com/storybookjs/storybook/blob/next/docs/writing-docs/doc-blocks.md -->
+
+<Canvas>
+ <Title />
+    <Subtitle />
+    <Description />
+    <Primary />
+    <Controls />
+    <Story id="components-form--with-schema" />
+</Canvas>
+
+## Props 
+<ArgsTable of={Form} />
+
+
+
+
+
+## Moving the submit button outside of the form
+_**TL;DR** see option `2` below_
+
+
+
+The submit button will only trigger the form submission if it's placed inside a form element with a valid action attribute.
+
+If you move the submit button outside of the form element, it will no longer trigger the form submission, and clicking the button will not perform any action.
+
+If you need to move the submit button for layout purposes, you have two options
+1. can still achieve the desired layout by positioning the form element and the submit button separately using CSS, without actually moving the submit button outside of the form. This way, the button will still trigger the form submission when clicked.
+2. you can not display the submit button in the form. Use the `onChangeCallback` to keep state outside of the form component in a parent component. And then add a save button that when clicked saves that `formData`.
+	
+Eg:
+
+```jsx
+<Form 
+    schema={schema} 
+    onChangeCallback={(data)=>(console.log("changed", JSON.stringify(data))}
+    showSubmitButton={false}
+/>
+```
+
+
+
+
+<Story 
+    name="No submit btn"
+    args={{ 
+            schema: getSchemaExamples("basic"), 
+            onChangeCallback: (data)=>(console.log("changed", JSON.stringify(data))),
+            showSubmitButton: false
+        }}>
+    {Template.bind({})}
+</Story>
+
+
+## Links
+
+- [JSON](https://www.json.org/json-en.html)

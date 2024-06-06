@@ -1,0 +1,157 @@
+
+import { ArgsTable, Canvas, Meta, Story, Source } from '@storybook/addon-docs';
+import { linkTo } from '@storybook/addon-links';
+import ReactJson from 'react-json-view';
+import Form from '../Form/index';
+import {getSchemaExamples, getFormDataExamples} from "../demo/schema-examples";
+import FormRaw from '!raw-loader!../Form/index.jsx';
+import useFormRaw from '!raw-loader!../Form/useForm/index.jsx';
+import validationRaw from '!raw-loader!../Form/useForm/validation/index.js';
+import FormFieldsListRaw from '!raw-loader!../Form/FormFieldsList/index.jsx';
+import FormFieldFactoryRaw from '!raw-loader!../Form/FormFieldsList/FormFieldFactory/index.jsx';
+
+<Meta title="Architecture/CodeWalkThrough" component={Form} />
+
+# Json Form Schema (Design) Pattern 
+
+## Architecture Code Walk Through
+See Architecutre Overview section first.
+
+_FYI This page references the code directly from the components in the repo._
+
+
+## Components
+
+### Form 
+
+The `Form` component is a reusable React component that renders a dynamic form based on a JSON `schema` and handles form submission and validation. It is designed to provide a convenient way to create complex forms with minimal boilerplate code.
+
+The component takes a JSON `schema` as input, which defines the structure and validation rules for the form data. It also accepts optional props for `initialFormData`, `onSubmitCallback`, `onChangeCallback`, and `showSubmitButton`, which allow for customization of the form behavior and appearance.
+
+The `Form` component uses the `useForm` hook to handle form state and behavior, including data validation, form submission, and form data updates. The `useForm` hook returns an object with formData, errors, handleChange, and handleSubmit properties, which are used by the `Form` component to render the form fields and handle form events.
+
+The `Form` component uses the `FormFieldsList` component to render the form fields based on the schema properties and the current form data. The FormFieldsList component receives the handleChange function as a prop, which allows it to update the form data in response to user input.
+
+<!-- Overall, the Form component provides a flexible and customizable way to create dynamic forms in React, while keeping the form state and behavior logic separate from the presentation logic. -->
+
+<Source code={FormRaw} language='jsx' dark={true}/>
+
+### useForm
+
+The `useForm` hook is a custom React hook that provides a convenient way to handle form state and behavior in a React application. It is designed to work with a JSON schema that defines the structure and validation rules for the form data.
+
+The hook takes an options object as input, which includes optional initialFormData, schema, onSubmitCallback, and onChangeCallback props. The initialFormData prop is used to initialize the form data, the schema prop is used to define the structure and validation rules for the form data, the onSubmitCallback prop is used to handle form submission, and the onChangeCallback prop is used to handle form data updates.
+
+The `useForm` hook uses the useState hook to manage the form data and errors state. It also uses the useEffect hook to initialize the form data with any initialFormData provided in the options object. The createInitialFormData function is used to merge the initialFormData with any default values defined in the schema.
+
+The handleChange function is used to handle changes to the form data. It updates the form data state and calls the onChangeCallback if provided. The handleSubmit function is used to handle form submission. It validates the form data using the validate function and calls the onSubmitCallback if provided.
+
+<!-- Overall, the `useForm` hook provides a convenient way to handle form state and behavior in a React application, while keeping the logic separate from the presentation. It is a great tool for building complex forms with minimal boilerplate code and provides an easy-to-use interface for developers to create custom forms tailored to their specific needs. -->
+
+<Source code={useFormRaw} language='jsx' dark={true}/>
+
+### validation
+
+The validate function is a utility function that validates form data against a JSON schema and returns an object of errors, if any. It takes an object with formData and schema properties as input and returns an object containing validation errors, if any.
+
+The validate function iterates over the properties defined in the schema and performs validation based on the type of the property. It checks if required properties are missing, checks if string properties meet length requirements, checks if number properties meet range requirements, and checks if enum properties contain valid values.
+
+The validate function provides a simple and effective way to validate form data against a JSON schema. It is designed to be used in conjunction with the `useForm` hook, which handles form state and behavior, and the JSON schema, which defines the structure and validation rules for the form data.
+
+The validate function can be made more robust by adding support for custom validation rules associated with the schema. This would allow developers to define their own validation rules for specific properties in the schema.
+
+Overall, the validate function is an important component of the React application architecture, as it provides a critical piece of functionality for validating form data in a consistent and reliable way.
+
+<Source code={validationRaw} language='jsx' dark={true}/>
+
+
+### FormFieldsList
+
+The `FormFieldsList` component is a React component that renders a list of form fields based on the given schema properties. It uses the `FormFieldFactory` component to render each individual form field based on its type and properties.
+
+The `FormFieldsList` component takes several props, including schemaProperties, formData, errors, and handleChange. The schemaProperties prop is an object that defines the properties and validation rules for the form fields, the formData prop is an object that contains the current values of the form fields, the errors prop is an object that contains any validation errors for the form fields, and the handleChange prop is a callback function that is called when the form fields are changed.
+
+The `FormFieldsList` component uses the Object.keys method to iterate over the schemaProperties object and render a `FormFieldFactory` component for each form field. It also uses the getValue function to get the value of each form field based on the given formData and schemaProperties.
+
+The `FormFieldsList` component is designed to be flexible and customizable, allowing developers to easily add and modify form fields based on the given schema properties. It also provides a consistent and reliable way to render form fields and handle form data in a React application.
+
+<!-- Overall, the FormFieldsList component is an important component of the React application architecture, as it provides a critical piece of functionality for rendering and handling form data in a user-friendly way. -->
+
+<Source code={FormFieldsListRaw} language='jsx' dark={true}/>
+
+
+### FormFieldFactory
+
+The `FormFieldFactory` is a factory function that creates a form field component based on the given props. It takes a props object as input, which includes the type of the form field, any optional format or enum values for string form fields, and any other props required by the form field component.
+
+The `FormFieldFactory` function uses a component mapping object, fieldComponents, to map the given type to a specific form field component. It also checks if the type is a string with a specific format or has enum values to determine if it should use a different form field component.
+
+The `FormFieldFactory` function returns a React element that renders the form field component based on the given props.
+
+The `FormFieldFactory` function is designed to be flexible and customizable, allowing developers to easily create and modify form field components based on the given type and props. It also provides a consistent and reliable way to render form fields in a React application.
+
+The `FormFieldFactory` function could be made more robust by adding error handling to check if the given type is valid or if the component mapping object contains the given type. It could also be improved by adding an enum list of types to ensure consistency and clarity in the code.
+
+<!-- Overall, the FormFieldFactory function is an important component of the React application architecture, as it provides a critical piece of functionality for creating and rendering form fields in a user-friendly way. -->
+
+See [Factory Method](https://refactoring.guru/design-patterns/factory-method) for an overview of the Factory design pattern.
+
+<Source code={FormFieldFactoryRaw} language='jsx' dark={true}/>
+
+
+
+
+## Caveats 
+- This is just an example of one way to implement the JSON form schema design pattern in React. There are many other ways to do it, depending on the specific requirements and constraints of your project.
+- This implementation does not use any external libraries for form generation or validation. However, there are many third-party libraries available that can simplify this process and provide additional features like form layout, internationalization, and accessibility.
+- This implementation does not cover all possible edge cases or error handling scenarios. You should thoroughly test your form and validation logic to ensure that it works correctly and handles all possible inputs and errors.
+- This implementation assumes that the form data is stored in the component state. If you need to share the form data across multiple components or pages, you may want to consider using a state management library like Redux or React Context. 
+
+## Existing libraries 
+Here is a list of JSON form schema libraries available for React, Vanilla JS, and Svelte:
+
+### Json form Schema 
+#### React
+- [React Hook Form](https://github.com/react-hook-form/react-hook-form) - A library for building performant and flexible forms with React, with built-in validation.
+- [Formik](https://formik.org) - A library for building forms in React, with support for validation and error messages.
+
+- [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form) - A React component for building Web forms from JSON Schema.
+- [react-schema-form](https://github.com/networknt/react-schema-form) - A React component for building forms from JSON schema.
+- [uniforms](https://github.com/vazco/uniforms) - A React library for building forms from any schema.
+#### Vanilla JS
+- [JSON Form](https://github.com/jsonform/jsonform) - A JSON Schema to HTML form generator, available in Vanilla JS as well as jQuery.
+- [Alpaca Forms](https://github.com/alpacahq/alpaca) - A JavaScript library for creating forms from JSON schemas or JavaScript objects.
+- [Formie](https://github.com/Formie/formie) - A Vanilla JS library for building forms from JSON schemas.
+#### Svelte
+- [svelte-jsonschema-form](https://github.com/convoyinc/svelte-jsonschema-form) - A Svelte component for building forms from JSON Schema.
+- [svelte-forms-lib](https://github.com/tjinauyeung/svelte-forms-lib) - A Svelte library for building forms from JSON schemas.
+- [svelte-forms](https://github.com/UnwrittenFun/svelte-forms) - A Svelte library for building forms from JSON schemas or JavaScript objects.
+
+### Validaiton 
+#### React
+- [Yup](https://github.com/jquense/yup) - A JavaScript schema builder for value parsing and validation, with support for React.
+
+#### Vanilla JS 
+- [Ajv](https://ajv.js.org/) JSON schema validator
+- [Validator.js](https://github.com/validatorjs/validator.js) - A library of string validators and sanitizers, with support for custom validators.
+- [Parsley.js](https://github.com/guillaumepotier/Parsley.js) - A library for validating form inputs in Vanilla JS, with support for custom validators and error messages.
+- [Validate.js](https://github.com/ansman/validate.js) - A library for validating form inputs in Vanilla JS, with support for custom validators and error messages.
+
+#### Svelte
+- [yup-svelte](https://github.com/matyunya/yup-svelte) - A library for using Yup validation with Svelte.
+- [svelte-form-validations](https://github.com/alfajango/svelte-form-validations) - A library for building forms with Svelte, with support for validation and error messages.
+
+
+_Note that these lists are not exhaustive and there may be other libraries available as well._
+
+
+## Books
+1. "JSON Schema: Modernize your applications with the JSON schema" by David Ortinau - This book provides a comprehensive guide to JSON schema, including how to use it to validate JSON data and generate forms. It also covers advanced topics such as schema reuse and versioning.
+1. "JSON at Work: Practical Data Integration for the Web" by Tom Marrs - This book provides an introduction to working with JSON data, including how to use JSON schema to validate and transform data. It also covers how to use JSON with REST APIs and other web services.
+1. "Learning JSON: A Practical Hands-on Guide" by Ryan Vice - This book provides a beginner-friendly introduction to working with JSON data, including how to use JSON schema to define data structures and validate data. It includes a section on the JSON form schema design pattern, which is used to define the structure of a form using JSON schema.
+1. "JSON Quick Syntax Reference" by Wallace Jackson - This book provides a quick reference guide to working with JSON data, including how to use JSON schema to define data structures and validate data. It includes a section on the JSON form schema design pattern, which is used to define the structure of a form using JSON schema.
+1. "JSON Forms: A Complete Guide" by David Kramer - This book provides a comprehensive guide to using **JSON Form Schema** to build dynamic and flexible forms. It covers the basics of JSON Form Schema syntax, as well as more advanced techniques such as conditional validation and form reuse.
+2. "Mastering JSON Schema" by Ajay Kumat - This book covers both JSON Schema and **JSON Form Schema**, providing a detailed guide to building complex data structures and forms using these technologies. It includes examples and case studies that demonstrate how to apply JSON Form Schema to real-world projects.
+4. "Building Forms with Vue.js" by Marina Mosti - This book focuses on using Vue.js to build web forms, and includes a section on using **JSON Form Schema** to define form structure and behavior. It covers the basics of JSON Form Schema syntax, as well as more advanced techniques such as conditional validation and form reuse.
+1. "React Design Patterns and Best Practices" by Michele Bertoli - This book provides a guide to designing effective and scalable React applications, including how to design forms using JSON schema. It includes a section on the Form Builder pattern, which is used to dynamically generate form components based on the schema.
+1. "Angular Forms: Reactive and Template-Driven" by Todd Motto and Jurgen Van de Moere - This book provides a comprehensive guide to building forms with Angular, including how to use JSON schema to define form structure and validation rules. It includes a section on the Form Builder pattern, which is used to dynamically generate form components based on the schema.
