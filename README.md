@@ -2,14 +2,14 @@
 
 <!-- _One liner + link to confluence page_
 _Screenshot of UI - optional_ -->
-A deep dive into the Json Form Schema (Design) Pattern. See [storybook](https://upgraded-succotash-69q321q.pages.github.io) intro doc for more info.
+A deep dive into the Json Form Schema (Design) Pattern. See [storybook](https://pietropassarelli.net/json-form-schema-design-pattern) intro doc for more info.
 
 ## Setup
 
 <!-- _stack - optional_
 _How to build and run the code/app_ -->
 
-Assuming you have your [mac setup](https://storytelling.tech.nyt.net/home/mac-setup/)
+Assuming you have your mac setup already with git, node and yarn.
 
 Pull the repo        
 ```
@@ -44,7 +44,7 @@ yarn storybook-docs
 ## System Architecture
 
 <!-- _High level overview of system architecture_ -->
-For system architecture of the design pattern [See Storybook](https://upgraded-succotash-69q321q.pages.github.io/)
+For system architecture of the design pattern [See Storybook](https://pietropassarelli.net/json-form-schema-design-pattern)
 
 <details><summary>System Architecture docs from the storybook boostrap that ues CRA see here</summary>
 
@@ -97,7 +97,7 @@ The Project itself was initially scaffolded using [Storybook Tutorials](https://
 
 ## Documentation
 
-[See Storybook](https://upgraded-succotash-69q321q.pages.github.io/)
+[See Storybook](https://pietropassarelli.net/json-form-schema-design-pattern)
 
 <!--
 
